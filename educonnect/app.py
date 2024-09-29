@@ -14,9 +14,15 @@ import genai.generate_quiz as quiz
 from studdybuddy.chatbot import StudyBuddyChatbot
 from flask_socketio import SocketIO, emit
 import eventlet
+from flask_cors import CORS
+
 load_dotenv()
 
+
 app = Flask(__name__)
+CORS(app) # Enable CORS for the entire app
+
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
 
 app.register_blueprint(upload_bp, url_prefix='/image')
 app.register_blueprint(user_bp,url_prefix='/user')
@@ -44,7 +50,7 @@ def index():
     return render_template('index.html')
 
 # Handle WebSocket messages
-@socketio.on('send_message')
+@socketio.on('send_message') 
 def handle_message(data):
     user_message = data.get('message')
     print(f"Received message: {user_message}")

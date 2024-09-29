@@ -41,12 +41,12 @@ def register():
 def login():
     users = get_db().users
     data = request.get_json()
-    user = users.find_one({"username": data['username']})
+    user = users.find_one({"email": data['email']})
     if user and check_password_hash(user['password'], data['password']):
-        access_token = create_access_token(identity=user['username'])
+        access_token = create_access_token(identity=user['email'])
         return jsonify(access_token=access_token), 200
     else:
-        return jsonify({"error":"Invalid email or passowrd"})
+        return jsonify({"error":"Invalid email or passowrd"}),401
     
 
 @user_bp.route('/profile', methods=['GET'])
@@ -57,7 +57,7 @@ def get_profile():
     
     # Fetch user details from the database
     users = get_db().users
-    user = users.find_one({"username": current_user}, {"_id": 0, "password": 0})
+    user = users.find_one({"email": current_user}, {"_id": 0, "password": 0})
     
     if user:
         return jsonify(user), 200
@@ -76,7 +76,7 @@ def update_profile():
     # user = users.find_one({"username":current_user},{"_id":0,"password":0})
     # Update the user with the provided data
     update_result = users.update_one(
-        {"username": current_user}, 
+        {"email": current_user}, 
         {"$set": data}  # Using $set to update fields
     )
 
@@ -95,7 +95,7 @@ def add_skills():
     # user = users.find_one({"username":current_user},{"_id":0,"password":0})
     # Update the user with the provided data
     update_result = users.update_one(
-        {"username": current_user}, 
+        {"email": current_user}, 
         {"$set": data}  # Using $set to update fields
     )
     if update_result.modified_count == 1:
@@ -111,7 +111,7 @@ def add_intrests():
     # user = users.find_one({"username":current_user},{"_id":0,"password":0})
     # Update the user with the provided data
     update_result = users.update_one(
-        {"username": current_user}, 
+        {"email": current_user}, 
         {"$set": data}  # Using $set to update fields
     )
     if update_result.modified_count == 1:
